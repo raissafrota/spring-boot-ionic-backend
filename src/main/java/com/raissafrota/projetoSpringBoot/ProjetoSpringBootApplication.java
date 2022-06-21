@@ -9,10 +9,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.raissafrota.projetoSpringBoot.domain.Categoria;
 import com.raissafrota.projetoSpringBoot.domain.Cidade;
+import com.raissafrota.projetoSpringBoot.domain.Cliente;
+import com.raissafrota.projetoSpringBoot.domain.Endereco;
 import com.raissafrota.projetoSpringBoot.domain.Estado;
 import com.raissafrota.projetoSpringBoot.domain.Produto;
+import com.raissafrota.projetoSpringBoot.domain.enums.TipoCliente;
 import com.raissafrota.projetoSpringBoot.repositories.CategoriaRepository;
 import com.raissafrota.projetoSpringBoot.repositories.CidadeRepository;
+import com.raissafrota.projetoSpringBoot.repositories.ClienteRepository;
+import com.raissafrota.projetoSpringBoot.repositories.EnderecoRepository;
 import com.raissafrota.projetoSpringBoot.repositories.EstadoRepository;
 import com.raissafrota.projetoSpringBoot.repositories.ProdutoRepository;
 
@@ -30,6 +35,12 @@ public class ProjetoSpringBootApplication implements CommandLineRunner {
 	
 	@Autowired
 	CidadeRepository cidadeRepository;
+	
+	@Autowired
+	ClienteRepository clienteRepository;
+	
+	@Autowired
+	EnderecoRepository enderecoRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProjetoSpringBootApplication.class, args);
@@ -45,6 +56,20 @@ public class ProjetoSpringBootApplication implements CommandLineRunner {
 		criarEstadosECidades();
 	}
 
+	private void criarClienteEEnderecos(Cidade cid1, Cidade cid2) {
+		Cliente cli1 = new Cliente(null, "Raissa", "raissa@gmail.com", "12343287616", TipoCliente.PESSOA_FISICA);
+		
+		cli1.getTelefones().addAll(Arrays.asList("34567786", "998734521"));
+		
+		Endereco end1 = new Endereco(null, "Rua Monsenhor Bruno", "300", "Apto 203", "Aldeota", "60123543", cli1, cid1);
+		Endereco end2 = new Endereco(null, "Avenida Epitácio Pessoa", "500", "Sala 4", "Centro", "60734123", cli1, cid2);
+		
+		cli1.getEnderecos().addAll(Arrays.asList(end1, end2));
+		
+		clienteRepository.saveAll(Arrays.asList(cli1));
+		enderecoRepository.saveAll(Arrays.asList(end1, end2));
+	}
+
 	private void criarEstadosECidades() {
 		Estado est1 = new Estado(null, "Ceará");
 		Estado est2 = new Estado(null, "Paraíba");
@@ -58,6 +83,8 @@ public class ProjetoSpringBootApplication implements CommandLineRunner {
 		
 		this.estadoRepository.saveAll(Arrays.asList(est1, est2));
 		this.cidadeRepository.saveAll(Arrays.asList(cid1, cid2, cid3));
+		
+		criarClienteEEnderecos(cid1, cid2);
 	}
 
 	private void criarCategoriasEProdutos() {
