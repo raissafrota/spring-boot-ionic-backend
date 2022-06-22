@@ -14,6 +14,7 @@ import com.raissafrota.projetoSpringBoot.domain.Cidade;
 import com.raissafrota.projetoSpringBoot.domain.Cliente;
 import com.raissafrota.projetoSpringBoot.domain.Endereco;
 import com.raissafrota.projetoSpringBoot.domain.Estado;
+import com.raissafrota.projetoSpringBoot.domain.ItemPedido;
 import com.raissafrota.projetoSpringBoot.domain.Pagamento;
 import com.raissafrota.projetoSpringBoot.domain.PagamentoComBoleto;
 import com.raissafrota.projetoSpringBoot.domain.PagamentoComCartao;
@@ -26,6 +27,7 @@ import com.raissafrota.projetoSpringBoot.repositories.CidadeRepository;
 import com.raissafrota.projetoSpringBoot.repositories.ClienteRepository;
 import com.raissafrota.projetoSpringBoot.repositories.EnderecoRepository;
 import com.raissafrota.projetoSpringBoot.repositories.EstadoRepository;
+import com.raissafrota.projetoSpringBoot.repositories.ItemPedidoRepository;
 import com.raissafrota.projetoSpringBoot.repositories.PagamentoRepository;
 import com.raissafrota.projetoSpringBoot.repositories.PedidoRepository;
 import com.raissafrota.projetoSpringBoot.repositories.ProdutoRepository;
@@ -57,6 +59,9 @@ public class ProjetoSpringBootApplication implements CommandLineRunner {
 	@Autowired
 	PagamentoRepository pagamentoRepository;
 
+	@Autowired
+	ItemPedidoRepository itemPedidoRepository;
+
 	public static void main(String[] args) {
 		SpringApplication.run(ProjetoSpringBootApplication.class, args);
 	}
@@ -68,10 +73,9 @@ public class ProjetoSpringBootApplication implements CommandLineRunner {
 
 	private void criarObjetosBancoDeDados() {
 		criarCategoriasEProdutos();
-		criarEstadosECidades();
 	}
 
-	private void criarClienteEEnderecos(Cidade cid1, Cidade cid2) {
+	private void criarClienteEEnderecos(Cidade cid1, Cidade cid2, Produto p1, Produto p2, Produto p3) {
 		Cliente cli1 = new Cliente(null, "Raissa", "raissa@gmail.com", "12343287616", TipoCliente.PESSOA_FISICA);
 
 		cli1.getTelefones().addAll(Arrays.asList("34567786", "998734521"));
@@ -85,10 +89,11 @@ public class ProjetoSpringBootApplication implements CommandLineRunner {
 		clienteRepository.saveAll(Arrays.asList(cli1));
 		enderecoRepository.saveAll(Arrays.asList(end1, end2));
 
-		criarPedidosEPagamentos(cli1, end1, end2);
+		criarPedidosEPagamentos(cli1, end1, end2, p1, p2, p3);
 	}
 
-	private void criarPedidosEPagamentos(Cliente cli1, Endereco end1, Endereco end2) {
+	private void criarPedidosEPagamentos(Cliente cli1, Endereco end1, Endereco end2, Produto p1, Produto p2,
+			Produto p3) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 		try {
@@ -101,18 +106,32 @@ public class ProjetoSpringBootApplication implements CommandLineRunner {
 			Pagamento pagto2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2,
 					sdf.parse("20/10/2017 00:00"), null);
 			ped2.setPagamento(pagto2);
-			
+
 			cli1.getPedidos().addAll(Arrays.asList(ped1, ped2));
 
 			pedidoRepository.saveAll(Arrays.asList(ped1, ped2));
 			pagamentoRepository.saveAll(Arrays.asList(pagto1, pagto2));
+
+			ItemPedido ip1 = new ItemPedido(ped1, p1, 0.00, 1, 2000.00);
+			ItemPedido ip2 = new ItemPedido(ped1, p3, 0.00, 2, 80.00);
+			ItemPedido ip3 = new ItemPedido(ped2, p2, 100.00, 1, 800.00);
+
+			ped1.getItens().addAll(Arrays.asList(ip1, ip2));
+			ped2.getItens().addAll(Arrays.asList(ip3));
+
+			p1.getItens().addAll(Arrays.asList(ip1));
+			p2.getItens().addAll(Arrays.asList(ip3));
+			p3.getItens().addAll(Arrays.asList(ip2));
+
+			itemPedidoRepository.saveAll(Arrays.asList(ip1, ip2, ip3));
+
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	private void criarEstadosECidades() {
+	private void criarEstadosECidades(Produto p1, Produto p2, Produto p3) {
 		Estado est1 = new Estado(null, "Ceará");
 		Estado est2 = new Estado(null, "Paraíba");
 
@@ -126,7 +145,7 @@ public class ProjetoSpringBootApplication implements CommandLineRunner {
 		this.estadoRepository.saveAll(Arrays.asList(est1, est2));
 		this.cidadeRepository.saveAll(Arrays.asList(cid1, cid2, cid3));
 
-		criarClienteEEnderecos(cid1, cid2);
+		criarClienteEEnderecos(cid1, cid2, p1, p2, p3);
 	}
 
 	private void criarCategoriasEProdutos() {
@@ -146,6 +165,8 @@ public class ProjetoSpringBootApplication implements CommandLineRunner {
 
 		this.categoriaRepository.saveAll(Arrays.asList(cat1, cat2));
 		this.produtoRepository.saveAll(Arrays.asList(p1, p2, p3));
+
+		criarEstadosECidades(p1, p2, p3);
 	}
 
 }
