@@ -14,7 +14,7 @@ public class ItemPedido implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Chave primária composta pelo pedido e pelo produto
-	@JsonIgnore
+	@JsonIgnore // Por causa da referência cíclica
 	@EmbeddedId // Id embutido em uma classe auxiliar
 	private ItemPedidoPK id = new ItemPedidoPK();
 
@@ -35,7 +35,7 @@ public class ItemPedido implements Serializable {
 		this.preco = preco;
 	}
 
-	@JsonIgnore // Por causa da referência cíclica
+	@JsonIgnore
 	public Pedido getPedido() {
 		return id.getPedido();
 	}
