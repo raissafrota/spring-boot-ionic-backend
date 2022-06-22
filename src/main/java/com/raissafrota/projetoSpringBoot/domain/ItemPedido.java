@@ -6,13 +6,16 @@ import java.util.Objects;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
-public class ItemPedido  implements Serializable{
+public class ItemPedido implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	// Chave primária composta pelo pedido e pelo produto
-	@EmbeddedId //Id embutido em uma classe auxiliar
+	@JsonIgnore
+	@EmbeddedId // Id embutido em uma classe auxiliar
 	private ItemPedidoPK id = new ItemPedidoPK();
 
 	private Double desconto;
@@ -32,14 +35,15 @@ public class ItemPedido  implements Serializable{
 		this.preco = preco;
 	}
 
+	@JsonIgnore // Por causa da referência cíclica
 	public Pedido getPedido() {
 		return id.getPedido();
 	}
-	
+
 	public Produto getProduto() {
 		return id.getProduto();
 	}
-	
+
 	public ItemPedidoPK getId() {
 		return id;
 	}
