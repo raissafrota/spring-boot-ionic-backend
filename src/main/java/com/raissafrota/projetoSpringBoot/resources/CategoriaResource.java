@@ -1,6 +1,8 @@
 package com.raissafrota.projetoSpringBoot.resources;
 
 import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.raissafrota.projetoSpringBoot.domain.Categoria;
+import com.raissafrota.projetoSpringBoot.dto.CategoriaDTO;
 import com.raissafrota.projetoSpringBoot.services.CategoriaService;
 
 @RestController
@@ -35,6 +38,17 @@ public class CategoriaResource {
 		return ResponseEntity.ok().body(categoria);
 	}
 
+	@RequestMapping(method = RequestMethod.GET)
+	public ResponseEntity<List<CategoriaDTO>> buscarTodasCategorias() {
+
+		List<Categoria> categorias = service.findAll();
+		
+		List<CategoriaDTO> categoriasDTO = categorias.stream().map(obj -> new CategoriaDTO(obj))
+				.collect(Collectors.toList());
+
+		return ResponseEntity.ok().body(categoriasDTO);
+	}
+
 	// @RequestBody é para receber o objeto JSON que eu vou criar
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Void> insert(@RequestBody Categoria obj) {
@@ -50,7 +64,7 @@ public class CategoriaResource {
 		obj = service.update(obj);
 		return ResponseEntity.noContent().build();
 	}
-	
+
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
 	public ResponseEntity<Void> update(@PathVariable Integer id) {
 		service.delete(id);
