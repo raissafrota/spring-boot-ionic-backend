@@ -13,20 +13,20 @@ import com.raissafrota.projetoSpringBoot.services.ClienteService;
 @RestController
 @RequestMapping(value = "/clientes")
 public class ClienteResource {
-	
+
 	@Autowired
 	ClienteService service;
 
-	@RequestMapping(method = RequestMethod.GET, value = "/boas-vindas" )
+	@RequestMapping(method = RequestMethod.GET, value = "/boas-vindas")
 	public String informarQueEstouNaClasseCliente() {
 		return "Olá! Acessei o endpoint corretamente e estou na classe ClienteResource! :D";
 	}
-	
+
 	@RequestMapping(method = RequestMethod.GET, value = "/{id}")
-	public ResponseEntity<?> buscarClientePorId(@PathVariable Integer id){
-		
-		Cliente cliente = service.buscar(id);
-		
+	public ResponseEntity<Cliente> buscarClientePorId(@PathVariable Integer id) {
+
+		Cliente cliente = service.find(id);
+
 		return ResponseEntity.ok().body(cliente);
 	}
 }
