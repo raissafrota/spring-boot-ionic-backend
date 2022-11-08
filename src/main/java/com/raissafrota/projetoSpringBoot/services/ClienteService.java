@@ -3,6 +3,8 @@ package com.raissafrota.projetoSpringBoot.services;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -39,6 +41,11 @@ public class ClienteService {
 	private void atualizandoInformacoes(Cliente c, Cliente obj) {
 		c.setNome(obj.getNome());
 		c.setEmail(obj.getEmail());
+	}
+	
+	@Transactional
+	public Cliente updateNewVersion(Cliente obj) {
+		return repo.save(obj);
 	}
 
 	public void delete(Integer id) {

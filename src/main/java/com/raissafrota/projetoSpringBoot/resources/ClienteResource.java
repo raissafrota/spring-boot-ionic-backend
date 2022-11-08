@@ -80,7 +80,7 @@ public class ClienteResource {
 		Cliente cliente = service.find(id);
 		BeanUtils.copyProperties(objDTO, cliente);
 		cliente.setId(id);
-		return ResponseEntity.status(HttpStatus.OK).body(service.update(cliente));
+		return ResponseEntity.status(HttpStatus.OK).body(service.updateNewVersion(cliente));
 	}
 
 	@RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
