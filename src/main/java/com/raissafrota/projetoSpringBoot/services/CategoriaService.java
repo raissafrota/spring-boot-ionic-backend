@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.raissafrota.projetoSpringBoot.domain.Categoria;
+import com.raissafrota.projetoSpringBoot.domain.Cliente;
 import com.raissafrota.projetoSpringBoot.dto.CategoriaDTO;
 import com.raissafrota.projetoSpringBoot.repositories.CategoriaRepository;
 import com.raissafrota.projetoSpringBoot.services.exceptions.DataIntegrityException;
@@ -34,8 +35,13 @@ public class CategoriaService {
 	}
 
 	public Categoria update(Categoria obj) {
-		find(obj.getId());
-		return repo.save(obj);
+		Categoria c = find(obj.getId());
+		atualizandoInformacoes(c, obj);
+		return repo.save(c);
+	}
+
+	private void atualizandoInformacoes(Categoria c, Categoria obj) {
+		c.setNome(obj.getNome());
 	}
 
 	public void delete(Integer id) {
@@ -51,8 +57,9 @@ public class CategoriaService {
 	public List<Categoria> findAll() {
 		return repo.findAll();
 	}
-	
-	public Page<Categoria> findPage(Integer pagina, Integer linhasPorPagina, String campoOrdenacao, String tipoOrdenacao){
+
+	public Page<Categoria> findPage(Integer pagina, Integer linhasPorPagina, String campoOrdenacao,
+			String tipoOrdenacao) {
 		PageRequest pageRequest = PageRequest.of(pagina, linhasPorPagina, Direction.valueOf(tipoOrdenacao),
 				campoOrdenacao);
 		return repo.findAll(pageRequest);
@@ -61,5 +68,5 @@ public class CategoriaService {
 	public Categoria fromDTO(CategoriaDTO categoriaDto) {
 		return new Categoria(categoriaDto.getId(), categoriaDto.getNome());
 	}
-	
+
 }
